@@ -22,8 +22,23 @@
 }
 
 #define macro ADD1() = takes(0) returns(0) {
-    0x04 calldataload
-    0x01 add
-    0x00 mstore
-    0x20 0x00 return
+    0x04 calldataload // [num1]
+    0x01 // [num2, num1]
+    dup2 // [num1, num2, num1]
+    iszero // [bool, num2, num1]
+    is_zero jumpi
+    dup1 // [num2, num2, num1]
+    iszero
+    is_zero jumpi
+    dup2 // [num1, num2, num1]
+    add // [result, num1]
+    dup1 // [result, result, num1]
+    swap2 // [num1, result, result]
+    lt // [bool, result]
+    is_output jumpi
+    is_zero:
+        add // 
+    is_output:
+        0x00 mstore
+        0x20 0x00 return
 }
