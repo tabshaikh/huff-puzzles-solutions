@@ -9,5 +9,8 @@
  */
 
 #define macro MAIN() = takes(0) returns(0) {
-
+    callvalue iszero 
+    dont_revert jumpi
+    revert
+    dont_revert:
 }
