@@ -10,5 +10,45 @@
 #define function maxOfArray(uint256[]) payable returns(uint256)
 
 #define macro MAIN() = takes(0) returns(0) {
-   
+   0x00 calldataload
+   0xe0 shr
+
+   dup1 __FUNC_SIG(maxOfArray) eq maxOfArray jumpi
+   0x00 0x00 revert
+
+   maxOfArray:
+     MAX_OF_ARRAY()
+}
+
+#define macro MAX_OF_ARRAY() = takes(0) returns(0) {
+    0x24 // [&array]
+    0x24 calldataload // [length, &array]
+    dup1
+    0x00 eq is_zero jumpi
+    0x00 // [i, length, &array]
+    0x00 // [max, i, length, &array]
+    swap2 swap1 // [i, length, max, &array]
+    loop:
+        dup2 dup2 eq exit jumpi
+        swap3 // [&array, length, max, i]
+        0x20 add // [&array++, length, max, i]
+        dup1 // [&array++, &array++, length, max, i]
+        swap4 // [i, &array++, length, max, &array++]
+        swap1 // [&array++, i, length, max, &array++]
+        calldataload // [array[0], i, length, max, &array++]
+        dup1 // [array[0], array[0], i, length, max, &array++]
+        swap4 // [max, array[0], i, length, array[0], &array++]
+        dup2 dup2 // [max, array[0], max, array[0], i, length, array[0], &array++]
+        lt less_than jumpi
+        swap1 // [array[0], max, i, length, array[0], &array++]
+        less_than:
+        pop // [new_max, i, length, array[0], &array++]
+        swap3 pop // [i, length, new_max, &array++]
+        0x01 add // [i++, length, new_max, &array++]
+    loop jump
+    is_zero:
+    0x00 0x00 revert
+    exit:
+        swap2 0x00 mstore
+        0x20 0x00 return
 }
