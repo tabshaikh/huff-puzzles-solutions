@@ -9,5 +9,14 @@
 
 
  #define macro MAIN() = takes(0) returns(0) {
-    
+    0x20 calldataload // [length]
+    dup1 // [length, length]
+    0x00 eq // [bool, length]
+    is_zero jumpi
+    0x40 calldataload // [val, length]
+    0x00 mstore // [length]
+    0x00 sha3 // [keccak256]
+    0x00 mstore
+    0x20 0x00 return
+    is_zero:
  }
